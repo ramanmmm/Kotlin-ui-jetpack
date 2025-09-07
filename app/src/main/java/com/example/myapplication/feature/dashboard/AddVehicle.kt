@@ -89,45 +89,52 @@ private fun BrandPickerField(
 ) {
     var open by rememberSaveable { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = selected?.name ?: "",
-        onValueChange = { /* read-only */ },
-        label = { Text(label) },
-        placeholder = { Text("Select a brand") },
-        readOnly = true,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { open = true },
-        trailingIcon = { Icon(imageVector = Icons.Filled.DirectionsCar, contentDescription = null) }
-    )
+    Box(modifier = modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = selected?.name ?: "",
+            onValueChange = { /* read-only */ },
+            label = { Text(label) },
+            placeholder = { Text("Select a brand") },
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.DirectionsCar,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { open = true } // icon click also opens
+                )
+            }
+        )
+        // invisible overlay to capture clicks anywhere on the field
+        Box(
+            Modifier
+                .matchParentSize()
+                .clickable { open = true }
+        )
+    }
 
     if (open) {
         AlertDialog(
             onDismissRequest = { open = false },
             title = { Text("Select Vehicle Brand", fontWeight = FontWeight.SemiBold) },
-            confirmButton = { /* selection closes dialog */ },
+            confirmButton = {},
             text = {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 420.dp)
-                ) {
+                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
                     items(brands) { brand ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
-                                .clickable {
-                                    onSelected(brand)
-                                    open = false
-                                }
                                 .background(Color(0xFFF7F9FC), RoundedCornerShape(12.dp))
+                                .clickable {
+                                    onSelected(brand); open = false
+                                }
                                 .padding(horizontal = 14.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             if (brand.iconRes != null) {
                                 Image(
-                                    painter = painterResource(id = brand.iconRes),
+                                    painter = painterResource(brand.iconRes),
                                     contentDescription = brand.name,
                                     modifier = Modifier.size(28.dp)
                                 )
@@ -139,17 +146,10 @@ private fun BrandPickerField(
                                 )
                             }
                             Spacer(Modifier.width(12.dp))
-                            Text(
-                                text = brand.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.weight(1f)
-                            )
+                            Text(brand.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                             RadioButton(
                                 selected = selected?.name == brand.name,
-                                onClick = {
-                                    onSelected(brand)
-                                    open = false
-                                }
+                                onClick = { onSelected(brand); open = false }
                             )
                         }
                         Spacer(Modifier.height(8.dp))
@@ -159,7 +159,6 @@ private fun BrandPickerField(
         )
     }
 }
-
 // ------------ Model Picker (filtered by brand) ------------
 @Composable
 private fun ModelPickerField(
@@ -170,58 +169,56 @@ private fun ModelPickerField(
     modifier: Modifier = Modifier
 ) {
     var open by rememberSaveable { mutableStateOf(false) }
-
     val models = modelsByBrand[brand?.name] ?: emptyList()
+    val enabled = brand != null && models.isNotEmpty()
 
-    OutlinedTextField(
-        value = selectedModel.orEmpty(),
-        onValueChange = { /* read-only */ },
-        label = { Text(label) },
-        placeholder = { Text(if (brand == null) "Select brand first" else "Select a model") },
-        readOnly = true,
-        enabled = brand != null && models.isNotEmpty(),
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(enabled = brand != null && models.isNotEmpty()) { open = true },
-        trailingIcon = { Icon(imageVector = Icons.Filled.ListAlt, contentDescription = null) }
-    )
+    Box(modifier = modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = selectedModel.orEmpty(),
+            onValueChange = { /* read-only */ },
+            label = { Text(label) },
+            placeholder = { Text(if (brand == null) "Select brand first" else "Select a model") },
+            readOnly = true,
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.ListAlt,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clickable(enabled = enabled) { open = true }
+                )
+            }
+        )
+        Box(
+            Modifier
+                .matchParentSize()
+                .clickable(enabled = enabled) { open = true }
+        )
+    }
 
     if (open) {
         AlertDialog(
             onDismissRequest = { open = false },
             title = { Text("Select Vehicle Model", fontWeight = FontWeight.SemiBold) },
-            confirmButton = { /* no confirm; selection closes dialog */ },
+            confirmButton = {},
             text = {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 420.dp)
-                ) {
+                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
                     items(models) { model ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
-                                .clickable {
-                                    onSelected(model)
-                                    open = false
-                                }
                                 .background(Color(0xFFF7F9FC), RoundedCornerShape(12.dp))
+                                .clickable { onSelected(model); open = false }
                                 .padding(horizontal = 14.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Spacer(Modifier.width(4.dp))
-                            Text(
-                                text = model,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.weight(1f)
-                            )
+                            Text(model, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                             RadioButton(
                                 selected = selectedModel == model,
-                                onClick = {
-                                    onSelected(model)
-                                    open = false
-                                }
+                                onClick = { onSelected(model); open = false }
                             )
                         }
                         Spacer(Modifier.height(8.dp))
@@ -231,7 +228,6 @@ private fun ModelPickerField(
         )
     }
 }
-
 // ------------ Fuel Picker ------------
 @Composable
 private fun FuelPickerField(
@@ -242,54 +238,51 @@ private fun FuelPickerField(
 ) {
     var open by rememberSaveable { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = selectedFuel.orEmpty(),
-        onValueChange = { /* read-only */ },
-        label = { Text(label) },
-        placeholder = { Text("Select fuel type") },
-        readOnly = true,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { open = true },
-        trailingIcon = { Icon(imageVector = Icons.Filled.LocalGasStation, contentDescription = null) }
-    )
+    Box(modifier = modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = selectedFuel.orEmpty(),
+            onValueChange = { /* read-only */ },
+            label = { Text(label) },
+            placeholder = { Text("Select fuel type") },
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.LocalGasStation,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { open = true }
+                )
+            }
+        )
+        Box(
+            Modifier
+                .matchParentSize()
+                .clickable { open = true }
+        )
+    }
 
     if (open) {
         AlertDialog(
             onDismissRequest = { open = false },
             title = { Text("Select Fuel Type", fontWeight = FontWeight.SemiBold) },
-            confirmButton = { /* selection closes dialog */ },
+            confirmButton = {},
             text = {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 420.dp)
-                ) {
+                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
                     items(fuelTypes) { fuel ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
-                                .clickable {
-                                    onSelected(fuel)
-                                    open = false
-                                }
                                 .background(Color(0xFFF7F9FC), RoundedCornerShape(12.dp))
+                                .clickable { onSelected(fuel); open = false }
                                 .padding(horizontal = 14.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Spacer(Modifier.width(4.dp))
-                            Text(
-                                text = fuel,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.weight(1f)
-                            )
+                            Text(fuel, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                             RadioButton(
                                 selected = selectedFuel == fuel,
-                                onClick = {
-                                    onSelected(fuel)
-                                    open = false
-                                }
+                                onClick = { onSelected(fuel); open = false }
                             )
                         }
                         Spacer(Modifier.height(8.dp))
