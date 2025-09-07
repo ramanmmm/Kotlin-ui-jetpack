@@ -37,10 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.R
 
-// ------------ Data models ------------
+// ---- Data models ----
 data class VehicleBrand(val name: String, val iconRes: Int? = null)
 
-// Put your brand icons in res/drawable (lowercase names)
+// Put your brand icons in res/drawable (all lowercase)
 private val vehicleBrands = listOf(
     VehicleBrand("Tata",   R.drawable.tata),
     VehicleBrand("Honda",  R.drawable.honda),
@@ -50,7 +50,7 @@ private val vehicleBrands = listOf(
     VehicleBrand("Other",  null)
 )
 
-// Brand -> Models map (sample). Edit as per your data.
+// Brand -> Models map (sample). Edit for your real data.
 private val modelsByBrand: Map<String, List<String>> = mapOf(
     "Honda" to listOf(
         "Activa 4G",
@@ -67,18 +67,12 @@ private val modelsByBrand: Map<String, List<String>> = mapOf(
     "Other" to listOf("Custom / Not Listed")
 )
 
-// ------------ Fuel Types ------------
+// ---- Fuel Types ----
 private val fuelTypes = listOf(
-    "Petrol",
-    "Diesel",
-    "CNG",
-    "LPG",
-    "Electric",
-    "Hybrid (Petrol + Electric)",
-    "Other"
+    "Petrol", "Diesel", "CNG", "LPG", "Electric", "Hybrid (Petrol + Electric)", "Other"
 )
 
-// ------------ Brand Picker ------------
+// ---- Brand Picker ----
 @Composable
 private fun BrandPickerField(
     label: String = "Brand",
@@ -101,11 +95,11 @@ private fun BrandPickerField(
                 Icon(
                     imageVector = Icons.Filled.DirectionsCar,
                     contentDescription = null,
-                    modifier = Modifier.clickable { open = true } // icon click also opens
+                    modifier = Modifier.clickable { open = true }
                 )
             }
         )
-        // invisible overlay to capture clicks anywhere on the field
+        // Overlay to capture taps anywhere on the field
         Box(
             Modifier
                 .matchParentSize()
@@ -119,16 +113,18 @@ private fun BrandPickerField(
             title = { Text("Select Vehicle Brand", fontWeight = FontWeight.SemiBold) },
             confirmButton = {},
             text = {
-                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
+                LazyColumn(
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 420.dp)
+                ) {
                     items(brands) { brand ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                                 .background(Color(0xFFF7F9FC), RoundedCornerShape(12.dp))
-                                .clickable {
-                                    onSelected(brand); open = false
-                                }
+                                .clickable { onSelected(brand); open = false }
                                 .padding(horizontal = 14.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -146,7 +142,11 @@ private fun BrandPickerField(
                                 )
                             }
                             Spacer(Modifier.width(12.dp))
-                            Text(brand.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                            Text(
+                                brand.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.weight(1f)
+                            )
                             RadioButton(
                                 selected = selected?.name == brand.name,
                                 onClick = { onSelected(brand); open = false }
@@ -159,7 +159,8 @@ private fun BrandPickerField(
         )
     }
 }
-// ------------ Model Picker (filtered by brand) ------------
+
+// ---- Model Picker (filtered by brand) ----
 @Composable
 private fun ModelPickerField(
     label: String = "Model",
@@ -185,8 +186,7 @@ private fun ModelPickerField(
                 Icon(
                     imageVector = Icons.Filled.ListAlt,
                     contentDescription = null,
-                    modifier = Modifier
-                        .clickable(enabled = enabled) { open = true }
+                    modifier = Modifier.clickable(enabled = enabled) { open = true }
                 )
             }
         )
@@ -203,7 +203,11 @@ private fun ModelPickerField(
             title = { Text("Select Vehicle Model", fontWeight = FontWeight.SemiBold) },
             confirmButton = {},
             text = {
-                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
+                LazyColumn(
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 420.dp)
+                ) {
                     items(models) { model ->
                         Row(
                             modifier = Modifier
@@ -215,7 +219,11 @@ private fun ModelPickerField(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Spacer(Modifier.width(4.dp))
-                            Text(model, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                            Text(
+                                model,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.weight(1f)
+                            )
                             RadioButton(
                                 selected = selectedModel == model,
                                 onClick = { onSelected(model); open = false }
@@ -228,7 +236,8 @@ private fun ModelPickerField(
         )
     }
 }
-// ------------ Fuel Picker ------------
+
+// ---- Fuel Picker ----
 @Composable
 private fun FuelPickerField(
     label: String = "Fuel Type",
@@ -267,7 +276,11 @@ private fun FuelPickerField(
             title = { Text("Select Fuel Type", fontWeight = FontWeight.SemiBold) },
             confirmButton = {},
             text = {
-                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
+                LazyColumn(
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 420.dp)
+                ) {
                     items(fuelTypes) { fuel ->
                         Row(
                             modifier = Modifier
@@ -279,7 +292,11 @@ private fun FuelPickerField(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Spacer(Modifier.width(4.dp))
-                            Text(fuel, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                            Text(
+                                fuel,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.weight(1f)
+                            )
                             RadioButton(
                                 selected = selectedFuel == fuel,
                                 onClick = { onSelected(fuel); open = false }
@@ -297,8 +314,19 @@ private fun FuelPickerField(
 @Composable
 fun AddVehicleScreen(
     onBack: () -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit = {} // default no-op to avoid accidental crashes
 ) {
+    // ---- SAFE STATE (saveable primitives only) ----
+    var selectedBrandName by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedModel     by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedFuel      by rememberSaveable { mutableStateOf<String?>(null) }
+    var number            by rememberSaveable { mutableStateOf("") }
+    var year              by rememberSaveable { mutableStateOf("") }
+    var owner             by rememberSaveable { mutableStateOf("") }
+
+    // derive the full brand object for UI display/icons
+    val selectedBrand: VehicleBrand? = vehicleBrands.find { it.name == selectedBrandName }
+
     Scaffold(
         topBar = {
             SmallTopAppBar(
@@ -312,7 +340,11 @@ fun AddVehicleScreen(
         },
         bottomBar = {
             Button(
-                onClick = onSubmit,
+                onClick = {
+                    // simple sanity checks before submit (optional)
+                    // e.g., ensure required fields are chosen; keep it minimal here
+                    onSubmit()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -338,14 +370,11 @@ fun AddVehicleScreen(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
             )
 
-            // Brand & Model
-            var selectedBrand by rememberSaveable { mutableStateOf<VehicleBrand?>(null) }
-            var selectedModel by rememberSaveable { mutableStateOf<String?>(null) }
-
+            // Brand
             BrandPickerField(
                 selected = selectedBrand,
                 onSelected = { brand ->
-                    selectedBrand = brand
+                    selectedBrandName = brand.name
                     selectedModel = null // clear model when brand changes
                 },
                 brands = vehicleBrands
@@ -353,6 +382,7 @@ fun AddVehicleScreen(
 
             Spacer(Modifier.height(12.dp))
 
+            // Model (depends on brand)
             ModelPickerField(
                 brand = selectedBrand,
                 selectedModel = selectedModel,
@@ -361,8 +391,7 @@ fun AddVehicleScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // Fuel Type (NEW)
-            var selectedFuel by rememberSaveable { mutableStateOf<String?>(null) }
+            // Fuel Type
             FuelPickerField(
                 selectedFuel = selectedFuel,
                 onSelected = { selectedFuel = it }
@@ -371,7 +400,6 @@ fun AddVehicleScreen(
             Spacer(Modifier.height(12.dp))
 
             // Vehicle number
-            var number by rememberSaveable { mutableStateOf("") }
             OutlinedTextField(
                 value = number,
                 onValueChange = { number = it },
@@ -387,7 +415,7 @@ fun AddVehicleScreen(
                 modifier = Modifier.padding(top = 20.dp, bottom = 8.dp)
             )
 
-            var year by rememberSaveable { mutableStateOf("") }
+            // Year of purchase
             OutlinedTextField(
                 value = year,
                 onValueChange = { year = it },
@@ -398,7 +426,7 @@ fun AddVehicleScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            var owner by rememberSaveable { mutableStateOf("") }
+            // Owner name
             OutlinedTextField(
                 value = owner,
                 onValueChange = { owner = it },
